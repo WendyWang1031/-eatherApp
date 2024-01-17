@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import styled from "@emotion/styled";
 
 import { ReactComponent as CloudyIcon } from "./images/cloudy.svg";
@@ -103,6 +103,7 @@ const Rain = styled.div`
 `;
 
 const WeatherApp = () => {
+  console.log("---invoke function component---");
   const [currentWeather, setCurrentWeather] = useState({
     observationTime: "2019-10-02 22:10:00",
     stationName: "臺北市",
@@ -111,7 +112,13 @@ const WeatherApp = () => {
     windSpeed: 0.3,
     humid: 0.88,
   });
-  const handleClick = () => {
+
+  useEffect(() => {
+    console.log("execute function in useEffect.");
+    fetchCurrentWeather();
+  }, []);
+
+  const fetchCurrentWeather = () => {
     fetch(
       "https://opendata.cwa.gov.tw/api/v1/rest/datastore/O-A0003-001?Authorization=CWA-0179E027-7E79-4DBA-BCF1-1B91C0BF4A7E&format=JSON&StationName=臺北"
     )
@@ -133,6 +140,7 @@ const WeatherApp = () => {
 
   return (
     <Container>
+      {console.log("render")}
       <WeatherCard>
         <Location>{currentWeather.stationName}</Location>
         <Description>{currentWeather.description}</Description>
@@ -151,7 +159,7 @@ const WeatherApp = () => {
           {Math.round(currentWeather.humid * 100)}%
         </Rain>
 
-        <Redo onClick={handleClick}>
+        <Redo onClick={fetchCurrentWeather}>
           最後觀測時間:
           {new Intl.DateTimeFormat("zh-TW", {
             hour: "numeric",
