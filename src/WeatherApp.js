@@ -104,19 +104,17 @@ const Rain = styled.div`
 
 const WeatherApp = () => {
   console.log("---invoke function component---");
-  const [currentWeather, setCurrentWeather] = useState({
-    observationTime: "2019-10-02 22:10:00",
-    stationName: "臺北市",
-    description: "多雲時晴",
-    temperature: 27.5,
-    windSpeed: 0.3,
-    humid: 0.88,
+  const [weatherElement, setWeatherElement] = useState({
+    observationTime: new Date(),
+    stationName: "",
+    description: "",
+    temperature: 0,
+    windSpeed: 0,
+    humid: 0,
+    weatherCode: 0,
+    rainPossibility: 0,
+    comfortability: "",
   });
-
-  useEffect(() => {
-    console.log("execute function in useEffect.");
-    fetchCurrentWeather();
-  }, []);
 
   const fetchCurrentWeather = () => {
     fetch(
@@ -125,46 +123,89 @@ const WeatherApp = () => {
       .then((response) => response.json())
       .then((data) => {
         const stationData = data.records.Station[0];
-        const weatherElement = stationData.WeatherElement;
+        const weatherContent = stationData.WeatherElement;
 
-        setCurrentWeather({
+        setWeatherElement({
           observationTime: stationData.ObsTime.DateTime,
           stationName: stationData.StationName,
-          description: weatherElement.Weather,
-          temperature: weatherElement.AirTemperature,
-          windSpeed: weatherElement.WindSpeed,
-          humid: weatherElement.RelativeHumidity,
+          description: weatherContent.Weather,
+          temperature: weatherContent.AirTemperature,
+          windSpeed: weatherContent.WindSpeed,
+          humid: weatherContent.RelativeHumidity,
         });
       });
   };
+  const fetchWeatherForecast = () => {
+    fetch(
+      "https://opendata.cwa.gov.tw/api/v1/rest/datastore/F-C0032-001?Authorization=CWA-0179E027-7E79-4DBA-BCF1-1B91C0BF4A7E&format=JSON&StationName=臺北"
+    )
+      .then((response) => response.json())
+      .then((data) => {
+        const stationData = data.records.Station[0];
+
+        const weatherContent = stationData.WeatherElement.reduce(
+          (neededElements, item) => {
+            if (
+              ["Wx", "PoP", "CI"].includes(item.elementName) &&
+              item.time.length > 0
+            ) {
+              neededElements[item.elementName] = item.time[0].parameter;
+            }
+            return neededElements;
+          },
+          {}
+        );
+
+        setWeatherElement((prevWeatherElement) => ({
+          ...prevWeatherElement,
+          description: weatherContent.Wx.parameterName,
+          weatherCode: weatherContent.Wx.parameterValue,
+          rainPossibility: weatherContent.PoP.parameterName,
+          comfortability: weatherContent.CI.parameterName,
+        }));
+      });
+  };
+  useEffect(() => {
+    console.log("execute function in useEffect.");
+    fetchCurrentWeather();
+    fetchWeatherForecast();
+  }, []);
 
   return (
     <Container>
       {console.log("render")}
       <WeatherCard>
-        <Location>{currentWeather.stationName}</Location>
-        <Description>{currentWeather.description}</Description>
+        <Location>{weatherElement.stationName}</Location>
+        <Description>
+          {weatherElement.description}
+          {weatherElement.comfortability}
+        </Description>
         <CurrentWeather>
           <Temperature>
-            {Math.round(currentWeather.temperature)} <Celsius>°C</Celsius>
+            {Math.round(weatherElement.temperature)} <Celsius>°C</Celsius>
           </Temperature>
           <Cloudy />
         </CurrentWeather>
         <AirFlow>
           <AirFlowIcon />
-          {currentWeather.windSpeed} m/h
+          {weatherElement.windSpeed} m/h
         </AirFlow>
         <Rain>
           <RainIcon />
-          {Math.round(currentWeather.humid * 100)}%
+          {Math.round(weatherElement.rainPossibility)}%
         </Rain>
 
-        <Redo onClick={fetchCurrentWeather}>
+        <Redo
+          onClick={() => {
+            fetchCurrentWeather();
+            fetchWeatherForecast();
+          }}
+        >
           最後觀測時間:
           {new Intl.DateTimeFormat("zh-TW", {
             hour: "numeric",
             minute: "numeric",
-          }).format(new Date(currentWeather.observationTime))}{" "}
+          }).format(new Date(weatherElement.observationTime))}{" "}
           <RedoIcon />
         </Redo>
       </WeatherCard>
