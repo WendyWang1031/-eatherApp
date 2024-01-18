@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import styled from "@emotion/styled";
 
 import { ReactComponent as CloudyIcon } from "./images/cloudy.svg";
@@ -138,7 +138,11 @@ const WeatherApp = () => {
 
   useEffect(() => {
     console.log("execute function in useEffect.");
-    const fetchData = async () => {
+    fetchData();
+  }, []);
+
+  const fetchData = useCallback(() => {
+    const fetchingData = async () => {
       const [currentWeather, weatherForecast] = await Promise.all([
         fetchCurrentWeather(),
         fetchWeatherForecast(),
@@ -148,7 +152,7 @@ const WeatherApp = () => {
         ...weatherForecast,
       });
     };
-    fetchData();
+    fetchingData();
   }, []);
 
   const fetchWeatherForecast = () => {
@@ -206,12 +210,7 @@ const WeatherApp = () => {
           {weatherElement.rainPossibility}%
         </Rain>
 
-        <Redo
-          onClick={() => {
-            fetchCurrentWeather();
-            fetchWeatherForecast();
-          }}
-        >
+        <Redo onClick={fetchData}>
           最後觀測時間:
           {new Intl.DateTimeFormat("zh-TW", {
             hour: "numeric",
