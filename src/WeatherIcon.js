@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import styled from "@emotion/styled";
 import { ReactComponent as CloudyIcon } from "./images/cloudy.svg";
 
@@ -66,10 +66,19 @@ const weatherCode2Type = (weatherCode) => {
     ) || [];
   return weatherType;
 };
-console.log(weatherCode2Type(currentWeatherCode));
 
 const WeatherIcon = ({ currentWeatherCode, moment }) => {
   const [currentWeatherIcon, setCurrentWeatherIcon] = useState("isClear");
+
+  const theWeatherIcon = useMemo(
+    () => weatherCode2Type(currentWeatherCode),
+    [currentWeatherCode]
+  );
+
+  useEffect(() => {
+    console.log(weatherCode2Type(currentWeatherCode));
+    setCurrentWeatherIcon(currentWeatherIcon);
+  }, [currentWeatherCode]);
 
   return (
     <IconContainer>{weatherIcons[moment][currentWeatherIcon]}</IconContainer>
