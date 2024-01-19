@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from "react";
 import styled from "@emotion/styled";
-
+import WeatherIcon from "./WeatherIcon.js";
 import { ReactComponent as CloudyIcon } from "./images/cloudy.svg";
 import { ReactComponent as AirFlowIcon } from "./images/air-Flow.svg";
 import { ReactComponent as RainIcon } from "./images/rain.svg";
@@ -136,25 +136,6 @@ const WeatherApp = () => {
       });
   };
 
-  useEffect(() => {
-    console.log("execute function in useEffect.");
-    fetchData();
-  }, []);
-
-  const fetchData = useCallback(() => {
-    const fetchingData = async () => {
-      const [currentWeather, weatherForecast] = await Promise.all([
-        fetchCurrentWeather(),
-        fetchWeatherForecast(),
-      ]);
-      setWeatherElement({
-        ...currentWeather,
-        ...weatherForecast,
-      });
-    };
-    fetchingData();
-  }, []);
-
   const fetchWeatherForecast = () => {
     return fetch(
       "https://opendata.cwa.gov.tw/api/v1/rest/datastore/F-C0032-001?Authorization=CWA-0179E027-7E79-4DBA-BCF1-1B91C0BF4A7E&format=JSON&StationName=臺北市"
@@ -186,6 +167,25 @@ const WeatherApp = () => {
       });
   };
 
+  const fetchData = useCallback(() => {
+    const fetchingData = async () => {
+      const [currentWeather, weatherForecast] = await Promise.all([
+        fetchCurrentWeather(),
+        fetchWeatherForecast(),
+      ]);
+      setWeatherElement({
+        ...currentWeather,
+        ...weatherForecast,
+      });
+    };
+    fetchingData();
+  }, []);
+
+  useEffect(() => {
+    console.log("execute function in useEffect.");
+    fetchData();
+  }, [fetchData]);
+
   return (
     <Container>
       {console.log("render")}
@@ -199,7 +199,7 @@ const WeatherApp = () => {
           <Temperature>
             {Math.round(weatherElement.temperature)} <Celsius>°C</Celsius>
           </Temperature>
-          <Cloudy />
+          <WeatherIcon />
         </CurrentWeather>
         <AirFlow>
           <AirFlowIcon />
