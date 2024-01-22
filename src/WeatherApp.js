@@ -10,7 +10,7 @@ import { ReactComponent as LoadingIcon } from "./images/loading.svg";
 import { ThemeProvider } from "@emotion/react";
 
 const theme = {
-  Light: {
+  light: {
     backgroundColor: "#ededed",
     foregroundColor: "#f9f9f9",
     boxShadow: "0 1px 3px 0 #999999",
@@ -247,6 +247,8 @@ const WeatherApp = () => {
     isLoading,
   } = weatherElement;
 
+  const [currentTheme, setCurrentTheme] = useState("light");
+
   const fetchData = useCallback(() => {
     const fetchingData = async () => {
       const [currentWeather, weatherForecast] = await Promise.all([
@@ -278,8 +280,12 @@ const WeatherApp = () => {
     fetchData();
   }, [fetchData]);
 
+  useEffect(() => {
+    setCurrentTheme(moment === "day" ? "light" : "dark");
+  }, [moment]);
+
   return (
-    <ThemeProvider theme={theme.dark}>
+    <ThemeProvider theme={theme[currentTheme]}>
       <Container>
         {console.log("render, is Loading: ", isLoading)}
         <WeatherCard>
