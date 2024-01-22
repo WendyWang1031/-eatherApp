@@ -205,10 +205,10 @@ const WeatherApp = () => {
       location.time && location.time.find((time) => time.Date === nowDate);
 
     const sunriseTimestamp = new Date(
-      `${locationDate.Date} ${locationDate.sunrise}`
+      `${locationDate.Date} ${locationDate.SunRiseTime}`
     ).getTime();
     const sunsetTimestamp = new Date(
-      `${locationDate.Date} ${locationDate.sunset}`
+      `${locationDate.Date} ${locationDate.SunSetTime}`
     ).getTime();
     const nowTimeStamp = now.getTime();
 
