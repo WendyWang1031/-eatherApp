@@ -6,6 +6,7 @@ import { ReactComponent as CloudyIcon } from "./images/cloudy.svg";
 import { ReactComponent as AirFlowIcon } from "./images/air-Flow.svg";
 import { ReactComponent as RainIcon } from "./images/rain.svg";
 import { ReactComponent as RedoIcon } from "./images/redo.svg";
+import { ReactComponent as LoadingIcon } from "./images/loading.svg";
 
 const Cloudy = styled(CloudyIcon)`
   flex-basis: 30px;
@@ -25,6 +26,16 @@ const Redo = styled.div`
     width: 15px;
     height: 15px;
     cursor: pointer;
+    animation: rotate infinite 1.5s linear;
+    animation-duration: ${({ isLoading }) => (isLoading ? "1.5s" : "0s")};
+  }
+  @keyframes rotate {
+    from {
+      transform: rotate(360deg);
+    }
+    to {
+      transform: rotate(0deg);
+    }
   }
 `;
 
@@ -199,6 +210,7 @@ const WeatherApp = () => {
     weatherCode: 0,
     rainPossibility: 0,
     comfortability: "",
+    isLoading: true,
   });
 
   const fetchData = useCallback(() => {
@@ -210,8 +222,15 @@ const WeatherApp = () => {
       setWeatherElement({
         ...currentWeather,
         ...weatherForecast,
+        isLoading: false,
       });
     };
+
+    setWeatherElement((prevState) => ({
+      ...prevState,
+      isLoading: true,
+    }));
+
     fetchingData();
   }, []);
 
@@ -227,7 +246,7 @@ const WeatherApp = () => {
 
   return (
     <Container>
-      {console.log("render")}
+      {console.log("render, is Loading: ", weatherElement.isLoading)}
       <WeatherCard>
         <Location>{weatherElement.stationName}</Location>
         <Description>
@@ -252,13 +271,13 @@ const WeatherApp = () => {
           {weatherElement.rainPossibility}%
         </Rain>
 
-        <Redo onClick={fetchData}>
+        <Redo onClick={fetchData} isLoading={weatherElement.isLoading}>
           最後觀測時間:
           {new Intl.DateTimeFormat("zh-TW", {
             hour: "numeric",
             minute: "numeric",
           }).format(new Date(weatherElement.observationTime))}{" "}
-          <RedoIcon />
+          {weatherElement.isLoading ? <LoadingIcon /> : <RedoIcon />}
         </Redo>
       </WeatherCard>
     </Container>
