@@ -12,7 +12,7 @@ const Cloudy = styled(CloudyIcon)`
   flex-basis: 30px;
 `;
 
-const Redo = styled.div`
+const Refresh = styled.div`
   position: absolute;
   right: 15px;
   bottom: 15px;
@@ -213,6 +213,19 @@ const WeatherApp = () => {
     isLoading: true,
   });
 
+  const {
+    observationTime,
+    stationName,
+    description,
+    temperature,
+    windSpeed,
+    humid,
+    weatherCode,
+    rainPossibility,
+    comfortability,
+    isLoading,
+  } = weatherElement;
+
   const fetchData = useCallback(() => {
     const fetchingData = async () => {
       const [currentWeather, weatherForecast] = await Promise.all([
@@ -246,39 +259,39 @@ const WeatherApp = () => {
 
   return (
     <Container>
-      {console.log("render, is Loading: ", weatherElement.isLoading)}
+      {console.log("render, is Loading: ", isLoading)}
       <WeatherCard>
-        <Location>{weatherElement.stationName}</Location>
+        <Location>{stationName}</Location>
         <Description>
-          {weatherElement.description}
-          {weatherElement.comfortability}
+          {description}
+          {comfortability}
         </Description>
         <CurrentWeather>
           <Temperature>
-            {Math.round(weatherElement.temperature)} <Celsius>°C</Celsius>
+            {Math.round(temperature)} <Celsius>°C</Celsius>
           </Temperature>
           <WeatherIcon
-            currentWeatherCode={weatherElement.weatherCode}
+            currentWeatherCode={weatherCode}
             moment={moment || "day"}
           />
         </CurrentWeather>
         <AirFlow>
           <AirFlowIcon />
-          {weatherElement.windSpeed} m/h
+          {windSpeed} m/h
         </AirFlow>
         <Rain>
           <RainIcon />
-          {weatherElement.rainPossibility}%
+          {rainPossibility}%
         </Rain>
 
-        <Redo onClick={fetchData} isLoading={weatherElement.isLoading}>
+        <Refresh onClick={fetchData} isLoading={isLoading}>
           最後觀測時間:
           {new Intl.DateTimeFormat("zh-TW", {
             hour: "numeric",
             minute: "numeric",
-          }).format(new Date(weatherElement.observationTime))}{" "}
-          {weatherElement.isLoading ? <LoadingIcon /> : <RedoIcon />}
-        </Redo>
+          }).format(new Date(observationTime))}{" "}
+          {isLoading ? <LoadingIcon /> : <RedoIcon />}
+        </Refresh>
       </WeatherCard>
     </Container>
   );
