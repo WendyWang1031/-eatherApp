@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from "react";
 import styled from "@emotion/styled";
 import WeatherIcon from "./WeatherIcon.js";
+import sunriseAndSunsetData from "./sunrise-sunset.json";
 import { ReactComponent as CloudyIcon } from "./images/cloudy.svg";
 import { ReactComponent as AirFlowIcon } from "./images/air-Flow.svg";
 import { ReactComponent as RainIcon } from "./images/rain.svg";
@@ -186,6 +187,36 @@ const WeatherApp = () => {
     fetchData();
   }, [fetchData]);
 
+  const getMoment = (CountyName) => {
+    const location = sunriseAndSunsetData.find(
+      (data) => data.CountyName === CountyName
+    );
+    if (!location) return null;
+    const now = new Date();
+    const nowDate = Intl.DateTimeFormat("zh-TW", {
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+    })
+      .format(now)
+      .replace(/\//g, "-");
+
+    const locationDate =
+      location.time && location.time.find((time) => time.Date === nowDate);
+
+    const sunriseTimestamp = new Date(
+      `${locationDate.Date} ${locationDate.sunrise}`
+    ).getTime();
+    const sunsetTimestamp = new Date(
+      `${locationDate.Date} ${locationDate.sunset}`
+    ).getTime();
+    const nowTimeStamp = now.getTime();
+
+    return sunriseTimestamp <= nowTimeStamp && nowTimeStamp <= sunsetTimestamp
+      ? "day"
+      : "night";
+  };
+
   return (
     <Container>
       {console.log("render")}
@@ -199,7 +230,10 @@ const WeatherApp = () => {
           <Temperature>
             {Math.round(weatherElement.temperature)} <Celsius>°C</Celsius>
           </Temperature>
-          <WeatherIcon />
+          <WeatherIcon
+            currentWeatherCode={weatherElement.weatherCode}
+            moment="night"
+          />
         </CurrentWeather>
         <AirFlow>
           <AirFlowIcon />
