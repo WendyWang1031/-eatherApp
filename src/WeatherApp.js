@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback, useMemo } from "react";
 import styled from "@emotion/styled";
 import WeatherCard from "./WeatherCard";
 import useWeatherApi from "./useWeatherApi";
+import WeatherSetting from "./WeatherSetting";
 import sunriseAndSunsetData from "./sunrise-sunset.json";
 import { ThemeProvider } from "@emotion/react";
 
@@ -80,14 +81,22 @@ const WeatherApp = () => {
     setCurrentTheme(moment === "day" ? "light" : "dark");
   }, [moment]);
 
+  const [currentPage, setCurrentPage] = useState("WeatherCard");
+
   return (
     <ThemeProvider theme={theme[currentTheme]}>
       <Container>
-        <WeatherCard
-          weatherElement={weatherElement}
-          moment={moment}
-          fetchData={fetchData}
-        />
+        {currentPage === "WeatherCard" && (
+          <WeatherCard
+            weatherElement={weatherElement}
+            moment={moment}
+            fetchData={fetchData}
+            setCurrentPage={setCurrentPage}
+          />
+        )}
+        {currentPage === "WeatherSetting" && (
+          <WeatherSetting setCurrentPage={setCurrentPage} />
+        )}
       </Container>
     </ThemeProvider>
   );
