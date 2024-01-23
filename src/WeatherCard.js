@@ -113,11 +113,10 @@ const Cog = styled(CogIcon)`
 `;
 
 const WeatherCard = (props) => {
-  const { weatherElement, moment, fetchData, setCurrentPage } = props;
+  const { weatherElement, moment, fetchData, setCurrentPage, cityName } = props;
 
   const {
     observationTime,
-    stationName,
     description,
     temperature,
     windSpeed,
@@ -132,7 +131,7 @@ const WeatherCard = (props) => {
     <div>
       <WeatherCardWrapper>
         <Cog onClick={() => setCurrentPage("WeatherSetting")} />
-        <Location>{stationName}</Location>
+        <Location>{cityName}</Location>
         <Description>
           {description}
           {comfortability}
