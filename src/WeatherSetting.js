@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useRef } from "react";
 import styled from "@emotion/styled";
 
 const WeatherSettingWrapper = styled.div`
@@ -113,10 +113,18 @@ const locations = [
 ];
 
 const WeatherSetting = ({ setCurrentPage }) => {
-  const [locationName, setLocationName] = useState("");
-  const handleChange = (e) => {
-    console.log(e.target.value);
-    setLocationName(e.target.value);
+  const inputLocationRef = useRef(null);
+
+  const handleSave = () => {
+    const locationName = inputLocationRef.current.value;
+    console.log(locationName);
+    if (locations.includes(locationName)) {
+      console.log(`儲存的地區資訊為：${locationName}`);
+      setCurrentPage("WeatherCard");
+    } else {
+      alert(`儲存失敗：您輸入的 ${locationName} 並非有效的地區`);
+      return;
+    }
   };
   return (
     <WeatherSettingWrapper>
@@ -127,7 +135,8 @@ const WeatherSetting = ({ setCurrentPage }) => {
         list="location-list"
         id="location"
         name="location"
-        onChange={handleChange}
+        defaultValue="臺南市"
+        ref={inputLocationRef}
       />
       <datalist id="location-list">
         {locations.map((location) => (
@@ -136,7 +145,7 @@ const WeatherSetting = ({ setCurrentPage }) => {
       </datalist>
       <ButtonGroup>
         <Back onClick={() => setCurrentPage("WeatherCard")}>返回</Back>
-        <Save>儲存</Save>
+        <Save onClick={handleSave}>儲存</Save>
       </ButtonGroup>
     </WeatherSettingWrapper>
   );
