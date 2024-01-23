@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import styled from "@emotion/styled";
 
 const WeatherSettingWrapper = styled.div`
@@ -23,7 +23,7 @@ const StyledLabel = styled.label`
   margin-bottom: 15px;
 `;
 
-const StyledInputList = styled.div`
+const StyledInputList = styled.input`
   display: block;
   box-sizing: border-box;
   background: transparent;
@@ -113,11 +113,22 @@ const locations = [
 ];
 
 const WeatherSetting = ({ setCurrentPage }) => {
+  const [locationName, setLocationName] = useState("");
+  const handleChange = (e) => {
+    console.log(e.target.value);
+    setLocationName(e.target.value);
+  };
   return (
     <WeatherSettingWrapper>
+      {console.log("render")}
       <Title>設定</Title>
       <StyledLabel htmlFor="location">地區</StyledLabel>
-      <StyledInputList list="location-list" id="location" name="location" />
+      <StyledInputList
+        list="location-list"
+        id="location"
+        name="location"
+        onChange={handleChange}
+      />
       <datalist id="location-list">
         {locations.map((location) => (
           <option value={location} key={location} />
