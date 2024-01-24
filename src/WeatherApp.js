@@ -70,7 +70,8 @@ const getMoment = (CountyName) => {
 
 const WeatherApp = () => {
   console.log("---invoke function component---");
-  const [currentCity, setCurrentCity] = useState("臺北市");
+  const storageCity = localStorage.getItem("cityName");
+  const [currentCity, setCurrentCity] = useState(storageCity || "臺北市");
   const currentLocation = findLocation(currentCity) || {};
   const [weatherElement, fetchData] = useWeatherApi(currentLocation);
   const [currentTheme, setCurrentTheme] = useState("light");
@@ -84,6 +85,10 @@ const WeatherApp = () => {
   useEffect(() => {
     setCurrentTheme(moment === "day" ? "light" : "dark");
   }, [moment]);
+
+  useEffect(() => {
+    localStorage.setItem("cityName", currentCity);
+  }, [currentCity]);
 
   return (
     <ThemeProvider theme={theme[currentTheme]}>
