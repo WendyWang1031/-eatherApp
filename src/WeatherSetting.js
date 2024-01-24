@@ -24,7 +24,7 @@ const StyledLabel = styled.label`
   margin-bottom: 15px;
 `;
 
-const StyledInputList = styled.input`
+const StyledSelect = styled.select`
   display: block;
   box-sizing: border-box;
   background: transparent;
@@ -91,7 +91,7 @@ const Save = styled.button`
 const locations = availableLocations.map((location) => location.cityName);
 
 const WeatherSetting = ({ setCurrentPage, cityName, setCurrentCity }) => {
-  //const inputLocationRef = useRef(null);
+  const selectRef = useRef(null);
   const [locationName, setLocationName] = useState(cityName);
   const handleChange = (e) => {
     console.log(e.target.value);
@@ -99,7 +99,7 @@ const WeatherSetting = ({ setCurrentPage, cityName, setCurrentCity }) => {
   };
 
   const handleSave = () => {
-    //const locationName = inputLocationRef.current.value;
+    const locationName = selectRef.current.value;
     console.log(locationName);
     if (locations.includes(locationName)) {
       console.log(`儲存的地區資訊為：${locationName}`);
@@ -115,13 +115,20 @@ const WeatherSetting = ({ setCurrentPage, cityName, setCurrentCity }) => {
       {console.log("render")}
       <Title>設定</Title>
       <StyledLabel htmlFor="location">地區</StyledLabel>
-      <StyledInputList
+      <StyledSelect
         list="location-list"
         id="location"
         name="location"
         defaultValue={locationName}
         onChange={handleChange}
-      />
+        ref={selectRef}
+      >
+        {locations.map((location) => (
+          <option value={location} key={location}>
+            {location}
+          </option>
+        ))}
+      </StyledSelect>
       <datalist id="location-list">
         {locations.map((location) => (
           <option value={location} key={location} />
